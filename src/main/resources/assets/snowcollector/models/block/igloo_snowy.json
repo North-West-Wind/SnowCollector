@@ -1,0 +1,7 @@
+{
+  "parent": "snowcollector:block/igloo",
+  "textures": {
+    "0": "snowcollector:block/igloo_snowy",
+    "particle": "minecraft:block/snow"
+  }
+}

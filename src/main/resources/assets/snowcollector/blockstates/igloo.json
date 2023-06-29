@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,snowy=false": {
+      "model": "snowcollector:block/igloo",
+      "y": 90
+    },
+    "facing=east,snowy=true": {
+      "model": "snowcollector:block/igloo_snowy",
+      "y": 90
+    },
+    "facing=north,snowy=false": {
+      "model": "snowcollector:block/igloo"
+    },
+    "facing=north,snowy=true": {
+      "model": "snowcollector:block/igloo_snowy"
+    },
+    "facing=south,snowy=false": {
+      "model": "snowcollector:block/igloo",
+      "y": 180
+    },
+    "facing=south,snowy=true": {
+      "model": "snowcollector:block/igloo_snowy",
+      "y": 180
+    },
+    "facing=west,snowy=false": {
+      "model": "snowcollector:block/igloo",
+      "y": 270
+    },
+    "facing=west,snowy=true": {
+      "model": "snowcollector:block/igloo_snowy",
+      "y": 270
+    }
+  }
+}

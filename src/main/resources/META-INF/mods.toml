@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[40,)"
+license="GPLv3"
+
+[[mods]]
+modId="snowcollector"
+version="${file.jarVersion}"
+displayName="Snow Collector"
+logoFile="snowcollector.png"
+authors="NorthWestWind"
+description='''
+Adds an igloo block that generates snow blocks.
+'''
+
+[[dependencies.snowcollector]]
+    modId="forge"
+    mandatory=true
+    versionRange="[40,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.snowcollector]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.18.2,1.19)"
+    ordering="NONE"
+    side="BOTH"
