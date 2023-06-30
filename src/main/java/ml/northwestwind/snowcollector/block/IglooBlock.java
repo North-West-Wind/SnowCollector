@@ -4,6 +4,8 @@ import ml.northwestwind.snowcollector.blockentity.IglooBlockEntity;
 import ml.northwestwind.snowcollector.registry.SCBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -52,6 +54,18 @@ public class IglooBlock extends BaseEntityBlock {
 
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState state1, boolean bool) {
+        if (!state.is(state1.getBlock())) {
+            BlockEntity blockentity = level.getBlockEntity(pos);
+            if (blockentity instanceof IglooBlockEntity) {
+                if (level instanceof ServerLevel) Containers.dropContents(level, pos, ((IglooBlockEntity) blockentity).items);
+                level.updateNeighbourForOutputSignal(pos, this);
+            }
+            super.onRemove(state, level, pos, state1, bool);
+        }
     }
 
     @Override
