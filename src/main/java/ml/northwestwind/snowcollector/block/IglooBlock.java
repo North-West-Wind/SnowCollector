@@ -18,6 +18,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -25,14 +27,15 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class IglooBlock extends BaseEntityBlock {
+public class IglooBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty SNOWY = BlockStateProperties.SNOWY;
     private static final VoxelShape SHAPE = makeShape();
 
     public IglooBlock() {
-        super(Properties.of(Material.ICE_SOLID).requiresCorrectToolForDrops().strength(2.0F, 6.0F).friction(0.989F).sound(SoundType.GLASS));
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(SNOWY, Boolean.FALSE));
+        super(Properties.of(Material.ICE_SOLID).requiresCorrectToolForDrops().strength(3.0F, 6.0F).friction(0.989F).sound(SoundType.GLASS).lightLevel((state) -> state.getValue(SNOWY) ? 7 : 0));
+        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE).setValue(FACING, Direction.NORTH).setValue(SNOWY, Boolean.FALSE));
     }
 
     @Nullable
@@ -49,7 +52,7 @@ public class IglooBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, SNOWY);
+        builder.add(WATERLOGGED, FACING, SNOWY);
     }
 
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -97,5 +100,9 @@ public class IglooBlock extends BaseEntityBlock {
         shape = Shapes.join(shape, Shapes.box(0.25, 0.625, 0.25, 0.75, 0.75, 0.75), BooleanOp.OR);
 
         return shape;
+    }
+
+    public FluidState getFluidState(BlockState state) {
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 }

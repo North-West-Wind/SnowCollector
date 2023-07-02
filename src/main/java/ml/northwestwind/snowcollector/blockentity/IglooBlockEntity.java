@@ -1,6 +1,7 @@
 package ml.northwestwind.snowcollector.blockentity;
 
 import ml.northwestwind.snowcollector.block.IglooBlock;
+import ml.northwestwind.snowcollector.config.SnowCollectorConfig;
 import ml.northwestwind.snowcollector.registry.SCBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -47,7 +48,7 @@ public class IglooBlockEntity extends BlockEntity {
     }
 
     public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T blockEntity) {
-        boolean isSnowing = level.isRaining() && level.canSeeSky(pos.above()) && level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos.above()).getY() <= pos.above().getY() && level.getBiome(pos).value().getPrecipitation() == Biome.Precipitation.SNOW;
+        boolean isSnowing = level.isRaining() && level.canSeeSky(pos.above()) && level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos.above()).getY() <= pos.above().getY() && (!SnowCollectorConfig.ONLY_SNOW.get() || level.getBiome(pos).value().getPrecipitation() == Biome.Precipitation.SNOW);
         boolean snowy = state.getValue(IglooBlock.SNOWY);
         if (isSnowing != snowy) {
             snowy = isSnowing;
@@ -60,16 +61,30 @@ public class IglooBlockEntity extends BlockEntity {
         progress++;
         if (progress >= MAX_PROGRESS) {
             ItemStack stack = igloo.items.get(0);
-            if (stack.isEmpty()) {
-                igloo.items.set(0, Items.SNOW_BLOCK.getDefaultInstance());
-                progress = 0;
-                level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.SNOW_FALL, SoundSource.BLOCKS, 1, 1, false);
-            } else if (stack.is(Items.SNOW_BLOCK) && stack.getCount() < 64) {
-                stack.setCount(stack.getCount() + 1);
-                progress = 0;
-                level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.SNOW_FALL, SoundSource.BLOCKS, 1, 1, false);
+            if (state.getValue(IglooBlock.WATERLOGGED)) {
+                if (stack.isEmpty()) {
+                    igloo.items.set(0, Items.ICE.getDefaultInstance());
+                    progress = 0;
+                    level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.SNOW_FALL, SoundSource.BLOCKS, 1, 1, false);
+                } else if (stack.is(Items.ICE) && stack.getCount() < 64) {
+                    stack.setCount(stack.getCount() + 1);
+                    progress = 0;
+                    level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.SNOW_FALL, SoundSource.BLOCKS, 1, 1, false);
+                } else {
+                    progress = MAX_PROGRESS;
+                }
             } else {
-                progress = MAX_PROGRESS;
+                if (stack.isEmpty()) {
+                    igloo.items.set(0, Items.SNOW_BLOCK.getDefaultInstance());
+                    progress = 0;
+                    level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.SNOW_FALL, SoundSource.BLOCKS, 1, 1, false);
+                } else if (stack.is(Items.SNOW_BLOCK) && stack.getCount() < 64) {
+                    stack.setCount(stack.getCount() + 1);
+                    progress = 0;
+                    level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.SNOW_FALL, SoundSource.BLOCKS, 1, 1, false);
+                } else {
+                    progress = MAX_PROGRESS;
+                }
             }
         }
         igloo.setProgress(progress);
